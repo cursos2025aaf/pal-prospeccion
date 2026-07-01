@@ -212,12 +212,35 @@ function perfil(n,t){
 }
 function makeScript(e){
   const p=PRODS[e.perf]||PRODS.otro;
-  return {
-    saludo:"Buenos días, mi nombre es Alberto, de PAL SRL. Hace más de 40 años trabajamos en soluciones gráficas para la industria.",
-    ctx:(e.perf==="flexo"||e.perf==="convertidor")?`Vi que ${e.nombre} trabaja en envases flexibles, y quería presentarles nuestra línea Pal Flex: ${p.pitch}.`:`Quería presentarles cómo podemos ayudar con ${p.pitch}.`,
-    cierre:"¿Tienen 10 minutos para que les muestre cómo trabajamos? Les puedo dejar una muestra de calidad sin compromiso.",
-    prod:p.prod
+  const scripts={
+    flexo:{
+      saludo:`Buenos días, ¿podría hablar con el responsable de preprensa o producción? Soy Alberto, de PAL SRL.`,
+      ctx:`Trabajamos con imprentas y convertidores de envases flexibles — les proveemos fotopolímeros digitales ECO3 con menor tiempo de entrega y menos arranque de máquina. Muchos clientes nuestros redujeron sus rechazos de plancha a menos del 2%.`,
+      cierre:`¿Les interesaría ver una muestra sin compromiso? Puedo coordinar para dejarla esta misma semana.`
+    },
+    convertidor:{
+      saludo:`Buenos días, ¿me podría comunicar con el área de producción o preprensa? Mi nombre es Alberto, de PAL SRL.`,
+      ctx:`Proveemos el servicio completo de preprensa — fotopolímero y plancha CTP en un solo proveedor. Eso simplifica la cadena, reduce los tiempos de espera y baja el costo por plancha.`,
+      cierre:`¿Tienen unos minutos para que les cuente cómo trabajamos con otros convertidores de la región?`
+    },
+    imprenta:{
+      saludo:`Buenos días, estoy buscando al encargado de preprensa o al responsable de planchas. Soy Alberto, de PAL SRL.`,
+      ctx:`Ofrecemos CTP y planchas offset de alta precisión. Nuestros clientes logran consistencia de punto desde la primera pasada y menos desperdicio de papel en el arranque.`,
+      cierre:`Si me lo permiten, puedo dejarles una plancha de muestra para probar en su propia máquina — sin costo ni compromiso.`
+    },
+    alimentos:{
+      saludo:`Buenos días, quisiera hablar con el área de packaging o compras. Mi nombre es Alberto, de PAL SRL.`,
+      ctx:`Asesoramos a empresas de la industria alimenticia en la selección de envases flexibles apropiados para cada producto. Los conectamos directamente con los proveedores más adecuados dentro de la cadena.`,
+      cierre:`¿Tienen 10 minutos para contarme qué tipo de envase usan actualmente? Con eso ya les puedo dar una recomendación concreta.`
+    },
+    otro:{
+      saludo:`Buenos días, quisiera hablar con el responsable del área gráfica o de producción. Soy Alberto, de PAL SRL.`,
+      ctx:`Somos proveedores de insumos y servicios para la industria gráfica — fotopolímeros, CTP y planchas offset. Estamos visitando empresas de la zona para presentar nuestra propuesta y dejar material.`,
+      cierre:`¿Les puedo dejar el catálogo y una muestra? No les lleva más de 10 minutos y les puede ser útil para una próxima licitación o renovación de proveedor.`
+    }
   };
+  const s=scripts[e.perf]||scripts.otro;
+  return{saludo:s.saludo,ctx:s.ctx,cierre:s.cierre,prod:p.prod};
 }
 
 function App(){
