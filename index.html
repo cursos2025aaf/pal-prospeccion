@@ -266,7 +266,7 @@ function App(){
       const{places:res}=await placeClass.current.searchByText({
         textQuery:q,
         fields:["id","displayName","formattedAddress","nationalPhoneNumber","websiteURI","rating","userRatingCount","location","types"],
-        locationRestriction:{circle:{center:loc,radius:radiusM}},
+        locationRestriction:{center:loc,radius:radiusM},
         maxResultCount:20
       });
       return res||[];
