@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="google-places-key" content="TU_API_KEY_AQUI">
+<meta name="google-places-key" content="AIzaSyDCXvZRrpGML0xatgGJvWpic06Iy6GfRVM">
 <title>PAL SRL — Prospección Territorial</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
@@ -123,31 +123,21 @@ main{flex:1;padding:32px 4%;background:#F0EBE3}
 .sbox{background:#F8FAFF;border-left:3px solid #0EA5E9;padding:16px;font-size:14px;line-height:1.75;color:#1F2937;font-style:italic}
 
 /* FOOTER */
-footer{background:#0A2540;border-top:4px solid #0EA5E9;padding:28px 4%;display:flex;align-items:center;justify-content:space-between}
+footer{background:#0A2540;border-top:4px solid #0EA5E9;padding:30px 4%;display:flex;align-items:center;justify-content:space-between}
 .ft-izq .ft1{font-family:'Oswald',sans-serif;font-size:32px;font-weight:700;color:#fff;letter-spacing:3px;text-transform:uppercase;line-height:1}
 .ft-izq .ft2{font-family:'JetBrains Mono',monospace;font-size:16px;color:#38BDF8;margin-top:8px;letter-spacing:1px;font-weight:600}
-.ft-der{display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:200px}
-.ft-der .ft3{font-family:'JetBrains Mono',monospace;font-size:14px;color:rgba(255,255,255,0.7);letter-spacing:0.5px;white-space:nowrap}
-.ft-der img{height:110px;display:block}
 
 @media(max-width:700px){
-  header{flex-wrap:wrap;gap:10px;padding:14px 4%}
-  .h-logo img{height:56px}
-  .h-sep{height:50px}
-  .h-titles h1{font-size:18px;gap:8px}
-  .h-rombo{width:24px;height:24px}
-  .h-rombo svg{width:12px;height:12px}
-  .h-sub{font-size:12px;margin-top:6px;letter-spacing:1px}
-  .h-btns{margin-left:0;gap:8px}
-  .h-btn{padding:10px 18px;font-size:14px}
-  .searchbar{flex-direction:column;gap:12px}
+  header{flex-wrap:wrap;gap:14px}
+  .h-btns{width:100%;justify-content:flex-end}
+  .h-titles h1{font-size:22px}
+  .searchbar{flex-direction:column}
   .sf input,.sf select{min-width:0;width:100%}
-  .btn-buscar{width:100%;justify-content:center}
-  footer{flex-direction:column;gap:20px;text-align:center;padding:24px 4%}
-  .ft-izq{align-items:center;text-align:center}
-  .ft-der{align-items:center}
-  .ft-der .ft3{text-align:center}
-}
+  footer{flex-direction:column;gap:24px;text-align:center}
+      }
+.ft-der{text-align:right}
+.ft-der .ft3{display:block;font-family:"JetBrains Mono",monospace;font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:10px}
+.ft-der img{height:110px}
 </style>
 </head>
 <body>
@@ -374,7 +364,7 @@ function App(){
 
     h("footer",null,
       h("div",{className:"ft-izq"},h("div",{className:"ft1"},"PAL SRL"),h("div",{className:"ft2"},"Servicios Gráficos")),
-      h("div",{className:"ft-der"},h("div",{className:"ft3"},"Sistema desarrollado por"),h("img",{src:IAG_LOGO,alt:"IAGENTES.TECH",style:{display:"block",marginLeft:"auto"}}))),
+      h("div",{className:"ft-der"},h("div",{className:"ft3"},"Sistema desarrollado por"),h("img",{src:IAG_LOGO,alt:"IAGENTES.TECH"}))),
 
     modal&&h("div",{className:"mo",onClick:()=>setModal(null)},
       h("div",{className:"mb",onClick:e=>e.stopPropagation()},
