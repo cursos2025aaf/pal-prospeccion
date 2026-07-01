@@ -24,6 +24,8 @@ header{background:#0A2540;border-bottom:4px solid #0EA5E9;padding:18px 4%;displa
 .h-btns{display:flex;gap:12px;margin-left:auto;flex-shrink:0}
 .h-btn{background:transparent;border:2px solid #0EA5E9;color:#fff;padding:14px 30px;font-family:'Oswald',sans-serif;font-size:17px;font-weight:600;text-transform:uppercase;letter-spacing:1px;cursor:pointer;border-radius:4px;transition:background 0.2s}
 .h-btn:hover{background:#0EA5E9}
+.h-btn:disabled{opacity:0.35;cursor:not-allowed;border-color:rgba(14,165,233,0.4)}
+.h-btn:disabled:hover{background:transparent}
 
 /* SEARCHBAR */
 .searchbar{background:#0F3460;border-bottom:2px solid #0EA5E9;padding:20px 4%;display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap}
@@ -138,12 +140,6 @@ footer{background:#0A2540;border-top:4px solid #0EA5E9;padding:30px 4%;display:f
       }
 
 
-
-
-
-.ft-der { text-align: right; }
-.ft-der .ft3 { display: block; font-family: monospace; font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
-.ft-der img { height: 110px; display: inline-block; }
 </style>
 </head>
 <body>
@@ -326,8 +322,8 @@ function App(){
               h("circle",{cx:"12",cy:"10",r:"3"})))),
         h("div",{className:"h-sub"},"Fotopolímeros · CTP · Insumos Gráficos")),
       h("div",{className:"h-btns"},
-        h("button",{className:"h-btn",onClick:()=>document.querySelector(".zones-col")?.scrollIntoView({behavior:"smooth"})},"ZONAS"),
-        h("button",{className:"h-btn",onClick:()=>document.querySelector(".emp-sec")?.scrollIntoView({behavior:"smooth"})},"EMPRESAS"))),
+        h("button",{className:"h-btn",disabled:emps.length===0,onClick:()=>document.querySelector(".zones-col")?.scrollIntoView({behavior:"smooth"})},"ZONAS"),
+        h("button",{className:"h-btn",disabled:emps.length===0,onClick:()=>document.querySelector(".emp-sec")?.scrollIntoView({behavior:"smooth"})},"EMPRESAS"))),
 
     h("div",{className:"searchbar"},
       h("div",{className:"sf"},h("label",null,"Provincia / Zona"),h("input",{type:"text",placeholder:"Ej: Entre Ríos, Provincia de Buenos Aires...",value:zona,onChange:e=>setZona(e.target.value),onKeyDown:e=>e.key==="Enter"&&buscar()})),
