@@ -250,10 +250,10 @@ function App(){
   },[]);
 
   function initMap(){
+    geocoder.current=new google.maps.Geocoder();
     if(!mapRef.current||mapInst.current) return;
     mapInst.current=new google.maps.Map(mapRef.current,{center:{lat:-34.6,lng:-58.7},zoom:8,styles:MAP_STYLE,disableDefaultUI:true,zoomControl:true});
     places.current=new google.maps.places.PlacesService(mapInst.current);
-    geocoder.current=new google.maps.Geocoder();
   }
   function geocode(z){return new Promise((res,rej)=>{geocoder.current.geocode({address:z+", Argentina"},(r,s)=>{if(s==="OK"&&r[0])res(r[0].geometry.location);else rej(new Error("No se pudo ubicar: "+z));});});}
   function search(q,loc){return new Promise(res=>{places.current.textSearch({query:q,location:loc,radius:60000},(r,s)=>{res(s===google.maps.places.PlacesServiceStatus.OK&&r?r:[]);});});}
@@ -261,7 +261,7 @@ function App(){
 
   const buscar=useCallback(async()=>{
     if(!zona.trim()){setErr("Ingresá una zona o provincia.");return;}
-    if(!geocoder.current){setErr("El mapa todavía está cargando. Esperá 2 segundos y volvé a intentar.");return;}
+    
     if(!GOOGLE_API_KEY){setErr("Falta la clave de Google Places. Configurala en la meta tag del archivo.");return;}
     setErr("");setLoading(true);setDone(false);setEmps([]);setCls([]);setSelZona(null);
     try{
