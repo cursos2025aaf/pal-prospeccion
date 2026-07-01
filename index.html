@@ -238,11 +238,15 @@ function App(){
   const geocoder=useRef(null);
 
   useEffect(()=>{
-    if(!GOOGLE_API_KEY) return;
+    if(!GOOGLE_API_KEY){setErr("Falta la clave de Google Places. Configurala en la meta tag del archivo.");return;}
+    window.gm_authFailure=()=>setErr("Google rechazó la clave de API (revisar restricciones de dominio/HTTP referrer o que Maps JavaScript API, Places API y Geocoding API estén habilitadas en Cloud Console).");
     if(window.google&&window.google.maps){initMap();return;}
     const s=document.createElement("script");
     s.src=`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places`;
-    s.async=true;s.onload=()=>setTimeout(initMap,500);document.head.appendChild(s);
+    s.async=true;
+    s.onload=()=>setTimeout(initMap,500);
+    s.onerror=()=>setErr("No se pudo cargar la API de Google Maps. Revisá tu conexión o la clave configurada.");
+    document.head.appendChild(s);
   },[]);
 
   function initMap(){
@@ -255,18 +259,22 @@ function App(){
   function search(q,loc){return new Promise(res=>{places.current.textSearch({query:q,location:loc,radius:60000},(r,s)=>{res(s===google.maps.places.PlacesServiceStatus.OK&&r?r:[]);});});}
   function details(id){return new Promise(res=>{places.current.getDetails({placeId:id,fields:["name","formatted_address","formatted_phone_number","website","rating","user_ratings_total","geometry","types"]},(p,s)=>{res(s===google.maps.places.PlacesServiceStatus.OK?p:null);});});}
 
+  function withTimeout(promise,ms,msg){
+    return Promise.race([promise,new Promise((_,rej)=>setTimeout(()=>rej(new Error(msg)),ms))]);
+  }
+
   const buscar=useCallback(async()=>{
     if(!zona.trim()){setErr("Ingresá una zona o provincia.");return;}
-    
     if(!GOOGLE_API_KEY){setErr("Falta la clave de Google Places. Configurala en la meta tag del archivo.");return;}
+    if(!geocoder.current||!places.current){setErr("El servicio de Google Maps todavía no terminó de cargar. Esperá unos segundos y volvé a intentar.");return;}
     setErr("");setLoading(true);setDone(false);setEmps([]);setCls([]);setSelZona(null);
     try{
-      const loc=await geocode(zona);
+      const loc=await withTimeout(geocode(zona),15000,"No se pudo ubicar la zona. Verificá el nombre o probá de nuevo.");
       const cfg=RUBROS.find(r=>r.value===rubro)||RUBROS[0];
       let all=[];
-      for(const q of cfg.queries){const r=await search(q+" en "+zona,loc);all=all.concat(r);}
+      for(const q of cfg.queries){const r=await withTimeout(search(q+" en "+zona,loc),15000,"La búsqueda tardó demasiado. Revisá la clave de API o intentá de nuevo.");all=all.concat(r);}
       const seen=new Set(),uniq=all.filter(r=>{if(seen.has(r.place_id))return false;seen.add(r.place_id);return true;});
-      const det=await Promise.all(uniq.slice(0,30).map(r=>details(r.place_id)));
+      const det=await withTimeout(Promise.all(uniq.slice(0,30).map(r=>details(r.place_id))),20000,"La búsqueda de detalles tardó demasiado. Intentá de nuevo.");
       const data=det.filter(Boolean).map(p=>{const perf=perfil(p.name,p.types);return{nombre:p.name,dir:p.formatted_address||"",tel:p.formatted_phone_number||"",web:p.website||"",rating:p.rating||null,rcount:p.user_ratings_total||0,lat:p.geometry.location.lat(),lng:p.geometry.location.lng(),perf};});
       const clustered=cluster(data,Number(radio));
       setEmps(data);setCls(clustered);setSelZona(clustered.length?0:null);setDone(true);
@@ -339,7 +347,7 @@ function App(){
         h("h2",null,"Planificá tu próxima recorrida"),
         h("p",null,"Ingresá una provincia o zona y el rubro que buscás. El sistema va a agrupar las empresas en zonas recorribles en una jornada, con ficha y guion de venta para cada una.")),
       !loading&&done&&emps.length===0&&!err&&h("div",{className:"empty"},h("h2",null,"Sin resultados"),h("p",null,"No se encontraron empresas. Probá con otra zona o rubro.")),
-      !loading&&emps.length>0&&h("div",null,
+      h("div",{style:{display:(!loading&&emps.length>0)?"block":"none"}},
         h("div",{className:"res-hdr"},
           h("h2",null,h("b",null,emps.length)," empresas en ",h("b",null,cls.length)," zonas"),
           h("button",{className:"btn-csv",onClick:csvExport},"⬇ Exportar CSV")),
