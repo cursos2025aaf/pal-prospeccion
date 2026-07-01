@@ -285,18 +285,16 @@ function App(){
     try{
       const loc=await withTimeout(geocode(zona),15000,"No se pudo ubicar la zona. Verificá el nombre o probá de nuevo.");
       const cfg=RUBROS.find(r=>r.value===rubro)||RUBROS[0];
-      const radiusKm=Math.min(Number(radio)||25,150);
-      const radiusM=radiusKm*1000;
-      const center=latLngOf(loc);
+      const radiusM=Math.min(Number(radio)||25,150)*1000;
       let all=[];
       for(const q of cfg.queries){const r=await withTimeout(search(q+" en "+zona,loc,radiusM),15000,"La búsqueda tardó demasiado. Revisá la clave de API o intentá de nuevo.");all=all.concat(r);}
       const seen=new Set(),uniq=all.filter(p=>{if(!p.id||seen.has(p.id))return false;seen.add(p.id);return true;});
-      const data=uniq.map(p=>{
+      const data=uniq.slice(0,50).map(p=>{
         const nombre=typeof p.displayName==="string"?p.displayName:(p.displayName?.text||"");
         const ll=latLngOf(p.location);
         const perf=perfil(nombre,p.types);
         return{nombre,dir:p.formattedAddress||"",tel:p.nationalPhoneNumber||"",web:p.websiteURI||"",rating:p.rating||null,rcount:p.userRatingCount||0,lat:ll?.lat,lng:ll?.lng,perf};
-      }).filter(e=>typeof e.lat==="number"&&typeof e.lng==="number"&&dist(center.lat,center.lng,e.lat,e.lng)<=radiusKm).slice(0,50);
+      }).filter(e=>typeof e.lat==="number"&&typeof e.lng==="number");
       const clustered=cluster(data,Number(radio));
       setEmps(data);setCls(clustered);setSelZona(clustered.length?0:null);setDone(true);
       renderMap(clustered);
