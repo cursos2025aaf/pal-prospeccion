@@ -260,17 +260,21 @@ function App(){
   }
   function geocode(z){return new Promise((res,rej)=>{geocoder.current.geocode({address:z+", Argentina"},(r,s)=>{if(s==="OK"&&r[0])res(r[0].geometry.location);else rej(new Error("No se pudo ubicar: "+z));});});}
   function latLngOf(loc){if(!loc)return null;return typeof loc.lat==="function"?{lat:loc.lat(),lng:loc.lng()}:{lat:loc.lat,lng:loc.lng};}
-  async function search(q,loc,radiusM){
+  function toBounds(center,radiusM){
+    const dlat=radiusM/111320,dlng=radiusM/(111320*Math.cos(center.lat*Math.PI/180));
+    return{north:center.lat+dlat,south:center.lat-dlat,east:center.lng+dlng,west:center.lng-dlng};
+  }
+  async function search(q,bounds){
     if(!placeClass.current) return [];
     try{
       const{places:res}=await placeClass.current.searchByText({
         textQuery:q,
         fields:["id","displayName","formattedAddress","nationalPhoneNumber","websiteURI","rating","userRatingCount","location","types"],
-        locationBias:{center:loc,radius:radiusM},
+        locationBias:bounds,
         maxResultCount:20
       });
       return res||[];
-    }catch(e){return [];}
+    }catch(e){console.error("searchByText error:",e.message);return [];}
   }
 
   function withTimeout(promise,ms,msg){
@@ -285,9 +289,11 @@ function App(){
     try{
       const loc=await withTimeout(geocode(zona),15000,"No se pudo ubicar la zona. Verificá el nombre o probá de nuevo.");
       const cfg=RUBROS.find(r=>r.value===rubro)||RUBROS[0];
-      const radiusM=Math.min(Number(radio)||25,150)*1000;
+      const radiusM=(Number(radio)||25)*1000;
+      const center=latLngOf(loc);
+      const bounds=toBounds(center,radiusM);
       let all=[];
-      for(const q of cfg.queries){const r=await withTimeout(search(q+" en "+zona,loc,radiusM),15000,"La búsqueda tardó demasiado. Revisá la clave de API o intentá de nuevo.");all=all.concat(r);}
+      for(const q of cfg.queries){const r=await withTimeout(search(q+" en "+zona,bounds),15000,"La búsqueda tardó demasiado. Revisá la clave de API o intentá de nuevo.");all=all.concat(r);}
       const seen=new Set(),uniq=all.filter(p=>{if(!p.id||seen.has(p.id))return false;seen.add(p.id);return true;});
       const data=uniq.slice(0,50).map(p=>{
         const nombre=typeof p.displayName==="string"?p.displayName:(p.displayName?.text||"");
