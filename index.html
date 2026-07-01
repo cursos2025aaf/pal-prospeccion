@@ -296,6 +296,20 @@ function App(){
     return Promise.race([promise,new Promise((_,rej)=>setTimeout(()=>rej(new Error(msg)),ms))]);
   }
 
+  function dist(lat1,lng1,lat2,lng2){
+    const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+    const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  }
+  const EXCLUIR_KW=["kiosco","kiosko","locutorio","fotocopias","fotocopiadora","librería","libreria","correo argentino","farmacia","supermercado","hipermercado","ferretería","ferreteria","verdulería","verduleria","panadería","panaderia","lavadero","tintorería","tintoreria","peluquería","peluqueria","estacionamiento","parking","taxi","remis","seguro","seguros","banco ","financiera","prestamos","odontología","odontologia","médico","medico","policía","policia","bomberos","iglesia","escuela","colegio","universidad","hotel","hostel","pizzería","pizzeria","restaurant","cervecería","cerveceria","bar ","café ","cafe ","parrilla","heladería","heladeria","natación","natacion","gimnasio","internet ","ciber","cyber"];
+  function esIrrelevante(nombre,tipos){
+    const n=(nombre||"").toLowerCase();
+    if(EXCLUIR_KW.some(p=>n.includes(p)))return true;
+    const tiposExcl=["book_store","convenience_store","drugstore","pharmacy","supermarket","hardware_store","car_repair","gas_station","lodging","restaurant","food","bakery","bar","cafe","school","university","hospital","doctor","dentist","bank","insurance_agency","real_estate_agency","hair_care","beauty_salon","gym","movie_theater","amusement_park","park","church","mosque","synagogue"];
+    if(tipos&&tiposExcl.some(t=>tipos.includes(t)))return true;
+    return false;
+  }
+
   const buscar=useCallback(async()=>{
     if(!zona.trim()){setErr("Ingresá una zona o provincia.");return;}
     if(!GOOGLE_API_KEY){setErr("Falta la clave de Google Places. Configurala en la meta tag del archivo.");return;}
@@ -308,12 +322,18 @@ function App(){
       let all=[];
       for(const q of cfg.queries){const r=await withTimeout(search(q+" en "+zona,loc,radiusM),15000,"La búsqueda tardó demasiado. Revisá la clave de API o intentá de nuevo.");all=all.concat(r);}
       const seen=new Set(),uniq=all.filter(p=>{if(!p.id||seen.has(p.id))return false;seen.add(p.id);return true;});
-      const data=uniq.slice(0,30).map(p=>{
+      const center2=latLngOf(loc);
+      const radioKm=Number(radio)||25;
+      const data=uniq.map(p=>{
         const nombre=typeof p.displayName==="string"?p.displayName:(p.displayName?.text||"");
         const ll=latLngOf(p.location);
         const perf=perfil(nombre,p.types);
-        return{id:p.id||"",nombre,dir:p.formattedAddress||"",tel:p.nationalPhoneNumber||"",web:p.websiteURI||"",rating:p.rating||null,rcount:p.userRatingCount||0,lat:ll?.lat,lng:ll?.lng,perf};
-      }).filter(e=>typeof e.lat==="number"&&typeof e.lng==="number");
+        return{id:p.id||"",nombre,dir:p.formattedAddress||"",tel:p.nationalPhoneNumber||"",web:p.websiteURI||"",rating:p.rating||null,rcount:p.userRatingCount||0,lat:ll?.lat,lng:ll?.lng,perf,tipos:p.types||[]};
+      }).filter(e=>
+        typeof e.lat==="number"&&typeof e.lng==="number"&&
+        dist(center2.lat,center2.lng,e.lat,e.lng)<=radioKm&&
+        !esIrrelevante(e.nombre,e.tipos)
+      ).slice(0,30);
       const clustered=cluster(data,Number(radio));
       setEmps(data);setCls(clustered);setSelZona(clustered.length?0:null);setDone(true);
       renderMap(clustered);
