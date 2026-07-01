@@ -234,12 +234,12 @@ function App(){
   const mapRef=useRef(null);
   const mapInst=useRef(null);
   const markers=useRef([]);
-  const places=useRef(null);
+  const placeClass=useRef(null);
   const geocoder=useRef(null);
 
   useEffect(()=>{
     if(!GOOGLE_API_KEY){setErr("Falta la clave de Google Places. Configurala en la meta tag del archivo.");return;}
-    window.gm_authFailure=()=>setErr("Google rechazó la clave de API (revisar restricciones de dominio/HTTP referrer o que Maps JavaScript API, Places API y Geocoding API estén habilitadas en Cloud Console).");
+    window.gm_authFailure=()=>{setErr("Google rechazó la clave de API (revisar restricciones de dominio/HTTP referrer o que Maps JavaScript API, Places API (New) y Geocoding API estén habilitadas en Cloud Console).");setLoading(false);};
     if(window.google&&window.google.maps){initMap();return;}
     const s=document.createElement("script");
     s.src=`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places`;
@@ -249,15 +249,29 @@ function App(){
     document.head.appendChild(s);
   },[]);
 
-  function initMap(){
-    geocoder.current=new google.maps.Geocoder();
-    if(!mapRef.current||mapInst.current) return;
-    mapInst.current=new google.maps.Map(mapRef.current,{center:{lat:-34.6,lng:-58.7},zoom:8,styles:MAP_STYLE,disableDefaultUI:true,zoomControl:true});
-    places.current=new google.maps.places.PlacesService(mapInst.current);
+  async function initMap(){
+    try{
+      const [{Map},{Place}]=await Promise.all([google.maps.importLibrary("maps"),google.maps.importLibrary("places")]);
+      geocoder.current=new google.maps.Geocoder();
+      placeClass.current=Place;
+      if(!mapRef.current||mapInst.current) return;
+      mapInst.current=new Map(mapRef.current,{center:{lat:-34.6,lng:-58.7},zoom:8,styles:MAP_STYLE,disableDefaultUI:true,zoomControl:true});
+    }catch(e){setErr("No se pudo inicializar Google Maps. Revisá la clave de API.");}
   }
   function geocode(z){return new Promise((res,rej)=>{geocoder.current.geocode({address:z+", Argentina"},(r,s)=>{if(s==="OK"&&r[0])res(r[0].geometry.location);else rej(new Error("No se pudo ubicar: "+z));});});}
-  function search(q,loc){return new Promise(res=>{places.current.textSearch({query:q,location:loc,radius:60000},(r,s)=>{res(s===google.maps.places.PlacesServiceStatus.OK&&r?r:[]);});});}
-  function details(id){return new Promise(res=>{places.current.getDetails({placeId:id,fields:["name","formatted_address","formatted_phone_number","website","rating","user_ratings_total","geometry","types"]},(p,s)=>{res(s===google.maps.places.PlacesServiceStatus.OK?p:null);});});}
+  function latLngOf(loc){if(!loc)return null;return typeof loc.lat==="function"?{lat:loc.lat(),lng:loc.lng()}:{lat:loc.lat,lng:loc.lng};}
+  async function search(q,loc,radiusM){
+    if(!placeClass.current) return [];
+    try{
+      const{places:res}=await placeClass.current.searchByText({
+        textQuery:q,
+        fields:["id","displayName","formattedAddress","nationalPhoneNumber","websiteURI","rating","userRatingCount","location","types"],
+        locationBias:{center:loc,radius:radiusM},
+        maxResultCount:20
+      });
+      return res||[];
+    }catch(e){return [];}
+  }
 
   function withTimeout(promise,ms,msg){
     return Promise.race([promise,new Promise((_,rej)=>setTimeout(()=>rej(new Error(msg)),ms))]);
@@ -266,16 +280,21 @@ function App(){
   const buscar=useCallback(async()=>{
     if(!zona.trim()){setErr("Ingresá una zona o provincia.");return;}
     if(!GOOGLE_API_KEY){setErr("Falta la clave de Google Places. Configurala en la meta tag del archivo.");return;}
-    if(!geocoder.current||!places.current){setErr("El servicio de Google Maps todavía no terminó de cargar. Esperá unos segundos y volvé a intentar.");return;}
+    if(!geocoder.current||!placeClass.current){setErr("El servicio de Google Maps todavía no terminó de cargar. Esperá unos segundos y volvé a intentar.");return;}
     setErr("");setLoading(true);setDone(false);setEmps([]);setCls([]);setSelZona(null);
     try{
       const loc=await withTimeout(geocode(zona),15000,"No se pudo ubicar la zona. Verificá el nombre o probá de nuevo.");
       const cfg=RUBROS.find(r=>r.value===rubro)||RUBROS[0];
+      const radiusM=Math.min(Number(radio)*1000||25000,50000);
       let all=[];
-      for(const q of cfg.queries){const r=await withTimeout(search(q+" en "+zona,loc),15000,"La búsqueda tardó demasiado. Revisá la clave de API o intentá de nuevo.");all=all.concat(r);}
-      const seen=new Set(),uniq=all.filter(r=>{if(seen.has(r.place_id))return false;seen.add(r.place_id);return true;});
-      const det=await withTimeout(Promise.all(uniq.slice(0,30).map(r=>details(r.place_id))),20000,"La búsqueda de detalles tardó demasiado. Intentá de nuevo.");
-      const data=det.filter(Boolean).map(p=>{const perf=perfil(p.name,p.types);return{nombre:p.name,dir:p.formatted_address||"",tel:p.formatted_phone_number||"",web:p.website||"",rating:p.rating||null,rcount:p.user_ratings_total||0,lat:p.geometry.location.lat(),lng:p.geometry.location.lng(),perf};});
+      for(const q of cfg.queries){const r=await withTimeout(search(q+" en "+zona,loc,radiusM),15000,"La búsqueda tardó demasiado. Revisá la clave de API o intentá de nuevo.");all=all.concat(r);}
+      const seen=new Set(),uniq=all.filter(p=>{if(!p.id||seen.has(p.id))return false;seen.add(p.id);return true;});
+      const data=uniq.slice(0,30).map(p=>{
+        const nombre=typeof p.displayName==="string"?p.displayName:(p.displayName?.text||"");
+        const ll=latLngOf(p.location);
+        const perf=perfil(nombre,p.types);
+        return{nombre,dir:p.formattedAddress||"",tel:p.nationalPhoneNumber||"",web:p.websiteURI||"",rating:p.rating||null,rcount:p.userRatingCount||0,lat:ll?.lat,lng:ll?.lng,perf};
+      }).filter(e=>typeof e.lat==="number"&&typeof e.lng==="number");
       const clustered=cluster(data,Number(radio));
       setEmps(data);setCls(clustered);setSelZona(clustered.length?0:null);setDone(true);
       renderMap(clustered);
