@@ -135,9 +135,14 @@ footer{background:#0A2540;border-top:4px solid #0EA5E9;padding:30px 4%;display:f
   .sf input,.sf select{min-width:0;width:100%}
   footer{flex-direction:column;gap:24px;text-align:center}
       }
-.ft-der{text-align:right}
-.ft-der .ft3{display:block;font-family:"JetBrains Mono",monospace;font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:10px}
-.ft-der img{height:110px}
+
+
+
+
+
+.ft-der { text-align: right; }
+.ft-der .ft3 { display: block; font-family: monospace; font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
+.ft-der img { height: 110px; display: inline-block; }
 </style>
 </head>
 <body>
@@ -364,7 +369,7 @@ function App(){
 
     h("footer",null,
       h("div",{className:"ft-izq"},h("div",{className:"ft1"},"PAL SRL"),h("div",{className:"ft2"},"Servicios Gráficos")),
-      h("div",{className:"ft-der"},h("div",{className:"ft3"},"Sistema desarrollado por"),h("img",{src:IAG_LOGO,alt:"IAGENTES.TECH"}))),
+      h("div",{style:{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:"8px"}},h("img",{src:IAG_LOGO,alt:"IAGENTES.TECH",style:{height:"110px",display:"block"}}))),
 
     modal&&h("div",{className:"mo",onClick:()=>setModal(null)},
       h("div",{className:"mb",onClick:e=>e.stopPropagation()},
