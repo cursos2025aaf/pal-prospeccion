@@ -498,12 +498,12 @@ function App(){
             h("h4",null,"Mis notas"),
             h("textarea",{className:"notas-area",placeholder:"Observaciones, próximo paso, nombre del contacto...",defaultValue:getCrm(modal).notas||"",onBlur:ev=>saveCrmNotas(modal,ev.target.value)})),
           modal.tel&&h("a",{
-            href:`https://wa.me/${modal.tel.replace(/[^0-9]/g,"")}?text=${encodeURIComponent(wspText)}`,
+            href:"https://wa.me/"+modal.tel.replace(/[^0-9]/g,"")+"?text="+encodeURIComponent(wspText),
             target:"_blank",
             className:"fbtn p",
             style:{display:"flex",marginTop:"8px",textDecoration:"none",justifyContent:"center"},
             onClick:()=>setModal(null)
-          },"💬 Enviar por WhatsApp"))))
+          },"💬 Enviar por WhatsApp")))))
   );
 }
 
