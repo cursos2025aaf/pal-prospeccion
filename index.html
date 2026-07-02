@@ -37,13 +37,17 @@ header{background:#0A2540;border-bottom:4px solid #0EA5E9;padding:18px 4%;displa
 .sf input:focus,.sf select:focus{border-color:#0EA5E9}
 .sf input::placeholder{color:rgba(255,255,255,0.3)}
 .sf select option{background:#0A2540;color:#fff}
-.rubro-sel{background:#0A2540;border:1.5px solid rgba(14,165,233,0.5);color:#fff;padding:14px 16px;font-size:15px;font-family:'Inter',sans-serif;border-radius:3px;cursor:pointer;min-width:300px;display:flex;justify-content:space-between;align-items:center;user-select:none;gap:8px}
-.rubro-sel:hover{border-color:#0EA5E9}
-.rubro-dd{position:absolute;top:calc(100% + 4px);left:0;background:#0A2540;border:1.5px solid #0EA5E9;border-radius:3px;z-index:200;min-width:300px;max-height:380px;overflow-y:auto;box-shadow:0 8px 28px rgba(0,0,0,0.5)}
-.rubro-opt{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;color:#fff;font-size:14px;font-family:'Inter',sans-serif;transition:background 0.12s}
-.rubro-opt:hover{background:rgba(14,165,233,0.18)}
-.rubro-opt input[type=checkbox]{width:15px;height:15px;accent-color:#0EA5E9;cursor:pointer;flex-shrink:0}
-.rubro-opt.r-completo{border-bottom:1px solid rgba(14,165,233,0.3);font-weight:600}
+.rubro-sel{background:#0A2540;border:1.5px solid rgba(14,165,233,0.5);color:#fff;padding:13px 16px;font-size:14px;font-family:'Inter',sans-serif;border-radius:4px;cursor:pointer;min-width:300px;display:flex;justify-content:space-between;align-items:center;user-select:none;gap:8px;transition:border-color 0.15s}
+.rubro-sel:hover,.rubro-sel.open{border-color:#0EA5E9;box-shadow:0 0 0 2px rgba(14,165,233,0.15)}
+.rubro-backdrop{position:fixed;inset:0;z-index:199}
+.rubro-dd{position:absolute;top:calc(100% + 6px);left:0;background:#0D1F35;border:2px solid #0EA5E9;border-radius:6px;z-index:200;min-width:320px;max-height:420px;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.7)}
+.rubro-dd-hdr{padding:8px 16px 6px;font-size:10px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;color:rgba(14,165,233,0.7);text-transform:uppercase;border-bottom:1px solid rgba(14,165,233,0.2)}
+.rubro-opt{display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer;color:#CBD5E1;font-size:13px;font-family:'Inter',sans-serif;transition:background 0.1s;border-bottom:1px solid rgba(255,255,255,0.04);text-transform:none;letter-spacing:normal;font-weight:400}
+.rubro-opt:hover{background:rgba(14,165,233,0.15);color:#fff}
+.rubro-opt.checked{color:#fff;background:rgba(14,165,233,0.08)}
+.rubro-opt input[type=checkbox]{width:16px;height:16px;accent-color:#0EA5E9;cursor:pointer;flex-shrink:0}
+.rubro-opt.r-completo{border-bottom:2px solid rgba(14,165,233,0.35);font-weight:600;color:#0EA5E9;background:rgba(14,165,233,0.06)}
+.rubro-opt.r-completo:hover{background:rgba(14,165,233,0.18)}
 .btn-buscar{background:#0EA5E9;color:#fff;border:none;padding:15px 34px;font-family:'Oswald',sans-serif;font-weight:700;font-size:19px;text-transform:uppercase;letter-spacing:1px;cursor:pointer;border-radius:3px;transition:background 0.15s;white-space:nowrap}
 .btn-buscar:hover{background:#0284C7}
 .btn-buscar:disabled{background:#374151;cursor:not-allowed}
@@ -181,10 +185,9 @@ const RUBROS = [
   { value:"arroceras", label:"Arroceras / Molinos arroceros", queries:["arrocera","molino arrocero","procesadora de arroz","secadero de arroz","acopio de arroz"] },
   { value:"avicolas", label:"Avícolas / Granjas de aves", queries:["avícola","granja avícola","frigorífico avícola","planta avícola","procesadora avícola"] },
   { value:"carton", label:"Cajas de cartón corrugado", queries:["fabrica de cajas de carton corrugado","carton corrugado","caja de carton","embalaje corrugado","cartonería industrial"] },
-  { value:"bolsas_papel", label:"Bolsas de papel", queries:["fabrica de bolsas de papel","bolsas de papel kraft","envasado en papel","bolsa de papel impresa","papel industrial bolsa"] },
-  { value:"bolsas_plastico", label:"Bolsas plásticas", queries:["fabrica de bolsas plasticas","bolsas de polietileno","plastico impreso","bolsas flexibles polietileno","fabrica de bolsas"] },
   { value:"sachets", label:"Sachets de leche / Packaging lácteo", queries:["sachet de leche","envase flexible lacteo","packaging lacteo","planta lactea sachet","fabrica de sachets"] },
-  { value:"regaleria", label:"Papeles de regalería", queries:["papel de regalo","papeles de regaleria","papel fantasia impreso","decoracion en papel regalo","papel gift wrap"] },
+  { value:"molinos", label:"Molinos / Molinería", queries:["molino harinero","molino de harina","molino de trigo","molino de maiz","molino de maíz","molino de especias","industria molinera","molienda industrial","fabrica de harina"] },
+  { value:"envasadoras", label:"Plantas envasadoras", queries:["planta envasadora","envasadora industrial","empresa envasadora","envasado industrial","planta de envasado","linea de envasado"] },
 ];
 
 const PRODS = {
@@ -201,6 +204,8 @@ const PRODS = {
   sachets:{ prod:"Fotopolímeros para packaging lácteo", pitch:"planchas flexo aptas para contacto indirecto con alimentos — cumple normas SENASA para packaging de productos lácteos" },
   regaleria:{ prod:"CTP + Fotopolímeros para regalería", pitch:"solución completa de preprensa para impresión de papeles de regalo — colores vibrantes y registro perfecto en alta velocidad" },
   otro:{ prod:"Catálogo completo PAL SRL", pitch:"más de 40 años de soluciones integrales para la industria gráfica" },
+  molinos:{ prod:"Fotopolímeros para envases de molinería", pitch:"planchas flexo para bolsas de harina, maíz, trigo y cereales — alta durabilidad y colores sólidos en cada tirada" },
+  envasadoras:{ prod:"Fotopolímeros Pal Flex para envasado industrial", pitch:"planchas flexo para líneas de envasado de alta velocidad — calidad consistente, menor tiempo de entrega" },
 };
 
 const COLORS=["#0EA5E9","#16A34A","#DC2626","#9333EA","#EA580C","#0D9488"];
@@ -242,6 +247,8 @@ function perfil(n,t){
   if(nm.includes("packaging")||nm.includes("envases")||nm.includes("convert")) return "convertidor";
   if(nm.includes("imprenta")||nm.includes("grafica")||nm.includes("offset")||nm.includes("impresion")||nm.includes("serigrafia")||nm.includes("litografia")) return "imprenta";
   if(nm.includes("alimen")||nm.includes("arroz")||nm.includes("snack")) return "alimentos";
+  if(nm.includes("molino")||nm.includes("molinera")||nm.includes("harinera")||nm.includes("harina")) return "molinos";
+  if(nm.includes("envasadora")||nm.includes("envasado")||nm.includes("empacadora")) return "envasadoras";
   if(nm.includes("cartel")||nm.includes("fotograf")||nm.includes("plotter")||nm.includes("gran formato")||nm.includes("diseño")||nm.includes("estudio")) return "plotters";
   return "otro";
 }
@@ -250,7 +257,7 @@ const RUBRO_KEYS={
   flexo:["flexo","flexograf","packaging","envase","envases","polietilen","laminado","bolsa impresa","etiqueta","sticker","sello","film ","serigrafia","imprenta flex"],
   imprentas:["imprenta","impresion","impresiones","grafica","gráfica","serigraf","litograf","offset","tipograf","editorial"],
   plotters:["plotter","ploter","carteleria","cartelería","fotograf","gran formato","banner","vinilo","rotulo","rótulo","letrero","señalética","señaletica","publicidad graf","diseño gráf","diseño graf","imag ","imagen corp"],
-  alimentos:["frigorifico","frigorific","procesadora de","planta de envase","conserva","molino ","cereal","snack","empacadora"],
+  alimentos:["frigorifico","frigorific","procesadora de","planta de envase","conserva","molino ","cereal","snack","empacadora","molino","molinera","harina","envasadora","envasado","arrocera","avicola","frigorifico","sachet"],
   arroceras:["arrocera","arrocer","arroz","molino arrocero","secadero de arroz","acopio de arroz"],
   avicolas:["avicola","avícola","granja avicola","granja avícola","frigorifico avicola","pollo","incubadora avicola"],
   carton:["carton","cartón","corrugado","embalaje corrugado","cartoneria","cartonería","caja de carton"],
@@ -258,6 +265,8 @@ const RUBRO_KEYS={
   bolsas_plastico:["bolsa de polietilen","bolsas plasticas","polietilen","bolsa plastic","film plastico","polipropil"],
   sachets:["sachet","lácteo","lacteo","planta lactea","lecheria","lechería","láctea","lactea"],
   regaleria:["regaleria","regalería","papel regalo","papel de regalo","papel gift","papel fantasia","papel fantasía"],
+  molinos:["molino","molinera","molinero","molienda","harina","trigo","maíz","maiz","cereal","yerba mate"],
+  envasadoras:["envasadora","envasado","planta envas","línea de envas","linea de envas","empacadora"],
 };
 function esPertinente(nombre,tipos,selRubros){
   const p=perfil(nombre,tipos);
@@ -437,7 +446,7 @@ function App(){
 
   const shown=selZona!==null&&cls[selZona]?cls[selZona]:emps;
   const PTAGS={flexo:"tag-f",convertidor:"tag-c",imprenta:"tag-i",alimentos:"tag-o",plotters:"tag-f",otro:"tag-o"};
-  const PLABS={flexo:"Flexografía",convertidor:"Convertidor",imprenta:"Imprenta",alimentos:"Alimenticia",arroceras:"Arrocera",avicolas:"Avícola",plotters:"Plotter/Cartelería",carton:"Cartón Corrugado",bolsas_papel:"Bolsas Papel",bolsas_plastico:"Bolsas Plásticas",sachets:"Sachets/Lácteos",regaleria:"Regalería",otro:"Industrial"};
+  const PLABS={flexo:"Flexografía",convertidor:"Convertidor",imprenta:"Imprenta",alimentos:"Alimenticia",arroceras:"Arrocera",avicolas:"Avícola",plotters:"Plotter/Cartelería",carton:"Cartón Corrugado",bolsas_papel:"Bolsas Papel",bolsas_plastico:"Bolsas Plásticas",sachets:"Sachets/Lácteos",regaleria:"Regalería",molinos:"Molinería",envasadoras:"Envasadora",otro:"Industrial"};
 
   return h("div",{id:"root"},
     h("header",null,
@@ -460,24 +469,29 @@ function App(){
       h("div",{className:"sf"},h("label",null,"Provincia / Zona"),h("input",{type:"text",placeholder:"Ej: Entre Ríos, Provincia de Buenos Aires...",value:zona,onChange:e=>setZona(e.target.value),onKeyDown:e=>e.key==="Enter"&&buscar()})),
       h("div",{className:"sf",style:{position:"relative"}},
         h("label",null,"Rubro a buscar"),
-        h("div",{className:"rubro-sel",onClick:()=>setRubroOpen(o=>!o)},
+        h("div",{className:"rubro-sel"+(rubroOpen?" open":""),onClick:()=>setRubroOpen(o=>!o)},
           selRubros.includes("completo")?"Todos los rubros (recomendado)":
           selRubros.length===1?RUBROS.find(r=>r.value===selRubros[0])?.label||selRubros[0]:
           selRubros.length+" rubros seleccionados",
           h("span",null,rubroOpen?"▲":"▼")),
+        rubroOpen&&h("div",{className:"rubro-backdrop",onClick:()=>setRubroOpen(false)}),
         rubroOpen&&h("div",{className:"rubro-dd"},
-          RUBROS.map(r=>h("label",{key:r.value,className:"rubro-opt"+(r.value==="completo"?" r-completo":"")},
-            h("input",{type:"checkbox",
-              checked:r.value==="completo"?selRubros.includes("completo"):(!selRubros.includes("completo")&&selRubros.includes(r.value)),
-              onChange:()=>{
+          h("div",{className:"rubro-dd-hdr"},"Seleccioná uno o varios rubros"),
+          RUBROS.map(r=>{
+            const isChecked=r.value==="completo"?selRubros.includes("completo"):(!selRubros.includes("completo")&&selRubros.includes(r.value));
+            return h("div",{key:r.value,
+              className:"rubro-opt"+(r.value==="completo"?" r-completo":"")+(isChecked?" checked":""),
+              onClick:()=>{
                 if(r.value==="completo"){setSelRubros(["completo"]);}
                 else{
                   const sin=selRubros.filter(x=>x!=="completo"&&x!==r.value);
                   const next=selRubros.includes(r.value)?sin:[...sin,r.value];
                   setSelRubros(next.length===0?["completo"]:next);
                 }
-              }}),
-            r.label)))),
+              }},
+              h("input",{type:"checkbox",checked:isChecked,onChange:()=>{},onClick:e=>e.stopPropagation()}),
+              r.label)
+          }))),
       h("div",{className:"sf sm"},h("label",null,"Radio (km)"),h("input",{type:"number",min:5,max:100,value:radio,onChange:e=>setRadio(e.target.value)})),
       h("button",{className:"btn-buscar",onClick:buscar,disabled:loading},loading?"Buscando...":"🔍 BUSCAR EMPRESAS")),
 
