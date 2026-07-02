@@ -31,8 +31,8 @@ header{background:#0A2540;border-bottom:4px solid #0EA5E9;padding:18px 4%;displa
 .searchbar{background:#0F3460;border-bottom:2px solid #0EA5E9;padding:20px 4%;display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap}
 .sf{display:flex;flex-direction:column;gap:7px}
 .sf label{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.85);font-weight:600}
-.sf input,.sf select{background:#0A2540;border:1.5px solid rgba(14,165,233,0.5);color:#fff;padding:14px 16px;font-size:16px;font-family:'Inter',sans-serif;border-radius:3px;outline:none;transition:border-color 0.15s}
-.sf input{min-width:280px}.sf select{min-width:300px;cursor:pointer}
+.sf input:not([type="checkbox"]),.sf select{background:#0A2540;border:1.5px solid rgba(14,165,233,0.5);color:#fff;padding:14px 16px;font-size:16px;font-family:'Inter',sans-serif;border-radius:3px;outline:none;transition:border-color 0.15s}
+.sf input:not([type="checkbox"]){min-width:280px}.sf select{min-width:300px;cursor:pointer}
 .sf.sm input{min-width:90px;width:90px}
 .sf input:focus,.sf select:focus{border-color:#0EA5E9}
 .sf input::placeholder{color:rgba(255,255,255,0.3)}
@@ -40,12 +40,12 @@ header{background:#0A2540;border-bottom:4px solid #0EA5E9;padding:18px 4%;displa
 .rubro-sel{background:#0A2540;border:1.5px solid rgba(14,165,233,0.5);color:#fff;padding:12px 14px;font-size:14px;font-family:'Inter',sans-serif;border-radius:4px;cursor:pointer;min-width:220px;display:flex;justify-content:space-between;align-items:center;user-select:none;gap:8px;transition:border-color 0.15s}
 .rubro-sel:hover,.rubro-sel.open{border-color:#0EA5E9;box-shadow:0 0 0 2px rgba(14,165,233,0.15)}
 .rubro-backdrop{position:fixed;inset:0;z-index:199}
-.rubro-dd{position:absolute;top:calc(100% + 6px);left:0;background:#0D1F35;border:2px solid #0EA5E9;border-radius:6px;z-index:200;min-width:240px;max-height:400px;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.7)}
+.rubro-dd{position:absolute;top:calc(100% + 6px);left:0;background:#0D1F35;border:2px solid #0EA5E9;border-radius:6px;z-index:200;min-width:280px;max-height:420px;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.7)}
 .rubro-dd-hdr{padding:8px 16px 6px;font-size:10px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;color:rgba(14,165,233,0.7);text-transform:uppercase;border-bottom:1px solid rgba(14,165,233,0.2)}
-.rubro-opt{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;color:#CBD5E1;font-size:13px;font-family:'Inter',sans-serif;transition:background 0.1s;border-bottom:1px solid rgba(255,255,255,0.04);text-transform:none;letter-spacing:normal;font-weight:400}
+.rubro-opt{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;color:#E2E8F0;font-size:15px;font-family:'Inter',sans-serif;transition:background 0.1s;border-bottom:1px solid rgba(255,255,255,0.05);text-transform:none;letter-spacing:normal;font-weight:400}
 .rubro-opt:hover{background:rgba(14,165,233,0.15);color:#fff}
 .rubro-opt.checked{color:#fff;background:rgba(14,165,233,0.08)}
-.rubro-opt input[type=checkbox]{width:16px;height:16px;accent-color:#0EA5E9;cursor:pointer;flex-shrink:0}
+.rubro-opt input[type=checkbox]{width:17px;height:17px;min-width:17px;accent-color:#0EA5E9;flex-shrink:0;padding:0!important;border:none!important;background:transparent!important}
 .rubro-opt.r-completo{border-bottom:2px solid rgba(14,165,233,0.35);font-weight:600;color:#0EA5E9;background:rgba(14,165,233,0.06)}
 .rubro-opt.r-completo:hover{background:rgba(14,165,233,0.18)}
 .btn-buscar{background:#0EA5E9;color:#fff;border:none;padding:15px 34px;font-family:'Oswald',sans-serif;font-weight:700;font-size:19px;text-transform:uppercase;letter-spacing:1px;cursor:pointer;border-radius:3px;transition:background 0.15s;white-space:nowrap}
@@ -246,7 +246,9 @@ function perfil(n,t){
   if(nm.includes("flexo")||nm.includes("flex")||tp.includes("flexo")) return "flexo";
   if(nm.includes("packaging")||nm.includes("envases")||nm.includes("convert")) return "convertidor";
   if(nm.includes("imprenta")||nm.includes("grafica")||nm.includes("offset")||nm.includes("impresion")||nm.includes("serigrafia")||nm.includes("litografia")) return "imprenta";
-  if(nm.includes("alimen")||nm.includes("arroz")||nm.includes("snack")) return "alimentos";
+  if(nm.includes("arrocera")||nm.includes("arrocer")||nm.includes("arroz")) return "arroceras";
+  if(nm.includes("avicola")||nm.includes("avícola")||nm.includes("avicultura")) return "avicolas";
+  if(nm.includes("alimen")||nm.includes("snack")) return "alimentos";
   if(nm.includes("molino")||nm.includes("molinera")||nm.includes("harinera")||nm.includes("harina")) return "molinos";
   if(nm.includes("envasadora")||nm.includes("envasado")||nm.includes("empacadora")) return "envasadoras";
   if(nm.includes("cartel")||nm.includes("fotograf")||nm.includes("plotter")||nm.includes("gran formato")||nm.includes("diseño")||nm.includes("estudio")) return "plotters";
@@ -268,11 +270,14 @@ const RUBRO_KEYS={
   molinos:["molino","molinera","molinero","molienda","harina","trigo","maíz","maiz","cereal","yerba mate"],
   envasadoras:["envasadora","envasado","planta envas","línea de envas","linea de envas","empacadora"],
 };
+const PMAP={flexo:"flexo",convertidor:"flexo",imprenta:"imprentas",alimentos:"alimentos",arroceras:"arroceras",avicolas:"avicolas",plotters:"plotters",molinos:"molinos",envasadoras:"envasadoras"};
 function esPertinente(nombre,tipos,selRubros){
+  if(selRubros.includes("completo")) return true;
   const p=perfil(nombre,tipos);
-  if(p!=="otro") return true;
+  const rMapped=PMAP[p];
+  if(rMapped) return selRubros.includes(rMapped);
   const n=(nombre||"").toLowerCase();
-  const keys=selRubros.includes("completo")?RUBRO_KEYS.completo:[...new Set(selRubros.flatMap(r=>RUBRO_KEYS[r]||[]))];
+  const keys=[...new Set(selRubros.flatMap(r=>RUBRO_KEYS[r]||[]))];
   return keys.some(k=>n.includes(k));
 }
 function makeScript(e){
