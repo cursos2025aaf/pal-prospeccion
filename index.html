@@ -170,7 +170,9 @@ const RUBROS = [
   { value:"flexo", label:"Packaging / Envases flexibles", queries:["envases flexibles","packaging flexible","imprenta flexografica","bolsas plasticas impresas"] },
   { value:"imprentas", label:"Imprentas y gráficas", queries:["imprenta","grafica","imprenta industrial","serigrafía","litografía"] },
   { value:"plotters", label:"Cartelería / Fotografía / Diseño", queries:["plotter epson","carteleria","fotografia profesional","estudio fotografico","gran formato","impresion digital"] },
-  { value:"alimentos", label:"Industria alimenticia", queries:["fabrica de alimentos","molino arrocero","planta de alimentos"] },
+  { value:"alimentos", label:"Industria alimenticia", queries:["fabrica de alimentos","planta de alimentos","industria alimenticia","frigorífico"] },
+  { value:"arroceras", label:"Arroceras / Molinos arroceros", queries:["arrocera","molino arrocero","procesadora de arroz","secadero de arroz","acopio de arroz"] },
+  { value:"avicolas", label:"Avícolas / Granjas de aves", queries:["avícola","granja avícola","frigorífico avícola","planta avícola","procesadora avícola"] },
   { value:"carton", label:"Cajas de cartón corrugado", queries:["fabrica de cajas de carton corrugado","carton corrugado","caja de carton","embalaje corrugado","cartonería industrial","fabrica de embalajes"] },
   { value:"bolsas_papel", label:"Bolsas de papel", queries:["fabrica de bolsas de papel","bolsas de papel kraft","envasado en papel","bolsa de papel impresa","papel industrial bolsa"] },
   { value:"bolsas_plastico", label:"Bolsas plásticas", queries:["fabrica de bolsas plasticas","bolsas de polietileno","plastico impreso","bolsas flexibles polietileno","fabrica de bolsas"] },
@@ -183,6 +185,8 @@ const PRODS = {
   convertidor:{ prod:"Fotopolímeros + CTP (línea completa)", pitch:"servicio integral de preprensa: polímero + plancha CTP en un solo proveedor" },
   imprenta:{ prod:"CTP y planchas offset", pitch:"copia CTP de alta precisión — menos arranque de máquina, mejor calidad de punto" },
   alimentos:{ prod:"Asesoría en packaging flexible", pitch:"conexión con la cadena de valor de envases flexibles" },
+  arroceras:{ prod:"Fotopolímeros Pal Flex para packaging de arroz", pitch:"planchas flexo para bolsas y sachets de arroz — colores sólidos y texto nítido en polietileno y papel kraft" },
+  avicolas:{ prod:"Fotopolímeros para packaging avícola", pitch:"planchas flexo para bandejas, bolsas y etiquetas de productos avícolas — resistencia a grasa y humedad" },
   plotters:{ prod:"Plotters Epson Sure Color", pitch:"plotters Epson de gran formato para gráfica, fotografía, cartelería y etiquetas — distribuidores oficiales Epson" },
   carton:{ prod:"Fotopolímeros + CTP para corrugado", pitch:"planchas fotopolímero de alta durabilidad para impresión flexográfica en cartón corrugado — mayor resistencia al agua y tinta" },
   bolsas_papel:{ prod:"Fotopolímeros Pal Flex para papel", pitch:"planchas flexo para impresión sobre bolsas de papel kraft — calidad superior en cada tirada, sin pérdida de detalle" },
@@ -403,7 +407,7 @@ function App(){
 
   const shown=selZona!==null&&cls[selZona]?cls[selZona]:emps;
   const PTAGS={flexo:"tag-f",convertidor:"tag-c",imprenta:"tag-i",alimentos:"tag-o",plotters:"tag-f",otro:"tag-o"};
-  const PLABS={flexo:"Flexografía",convertidor:"Convertidor",imprenta:"Imprenta",alimentos:"Alimenticia",plotters:"Plotter/Cartelería",carton:"Cartón Corrugado",bolsas_papel:"Bolsas Papel",bolsas_plastico:"Bolsas Plásticas",sachets:"Sachets/Lácteos",regaleria:"Regalería",otro:"Industrial"};
+  const PLABS={flexo:"Flexografía",convertidor:"Convertidor",imprenta:"Imprenta",alimentos:"Alimenticia",arroceras:"Arrocera",avicolas:"Avícola",plotters:"Plotter/Cartelería",carton:"Cartón Corrugado",bolsas_papel:"Bolsas Papel",bolsas_plastico:"Bolsas Plásticas",sachets:"Sachets/Lácteos",regaleria:"Regalería",otro:"Industrial"};
 
   return h("div",{id:"root"},
     h("header",null,
