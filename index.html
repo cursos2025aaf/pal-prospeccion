@@ -37,12 +37,12 @@ header{background:#0A2540;border-bottom:4px solid #0EA5E9;padding:18px 4%;displa
 .sf input:focus,.sf select:focus{border-color:#0EA5E9}
 .sf input::placeholder{color:rgba(255,255,255,0.3)}
 .sf select option{background:#0A2540;color:#fff}
-.rubro-sel{background:#0A2540;border:1.5px solid rgba(14,165,233,0.5);color:#fff;padding:13px 16px;font-size:14px;font-family:'Inter',sans-serif;border-radius:4px;cursor:pointer;min-width:300px;display:flex;justify-content:space-between;align-items:center;user-select:none;gap:8px;transition:border-color 0.15s}
+.rubro-sel{background:#0A2540;border:1.5px solid rgba(14,165,233,0.5);color:#fff;padding:12px 14px;font-size:14px;font-family:'Inter',sans-serif;border-radius:4px;cursor:pointer;min-width:220px;display:flex;justify-content:space-between;align-items:center;user-select:none;gap:8px;transition:border-color 0.15s}
 .rubro-sel:hover,.rubro-sel.open{border-color:#0EA5E9;box-shadow:0 0 0 2px rgba(14,165,233,0.15)}
 .rubro-backdrop{position:fixed;inset:0;z-index:199}
-.rubro-dd{position:absolute;top:calc(100% + 6px);left:0;background:#0D1F35;border:2px solid #0EA5E9;border-radius:6px;z-index:200;min-width:320px;max-height:420px;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.7)}
+.rubro-dd{position:absolute;top:calc(100% + 6px);left:0;background:#0D1F35;border:2px solid #0EA5E9;border-radius:6px;z-index:200;min-width:240px;max-height:400px;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.7)}
 .rubro-dd-hdr{padding:8px 16px 6px;font-size:10px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;color:rgba(14,165,233,0.7);text-transform:uppercase;border-bottom:1px solid rgba(14,165,233,0.2)}
-.rubro-opt{display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer;color:#CBD5E1;font-size:13px;font-family:'Inter',sans-serif;transition:background 0.1s;border-bottom:1px solid rgba(255,255,255,0.04);text-transform:none;letter-spacing:normal;font-weight:400}
+.rubro-opt{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;color:#CBD5E1;font-size:13px;font-family:'Inter',sans-serif;transition:background 0.1s;border-bottom:1px solid rgba(255,255,255,0.04);text-transform:none;letter-spacing:normal;font-weight:400}
 .rubro-opt:hover{background:rgba(14,165,233,0.15);color:#fff}
 .rubro-opt.checked{color:#fff;background:rgba(14,165,233,0.08)}
 .rubro-opt input[type=checkbox]{width:16px;height:16px;accent-color:#0EA5E9;cursor:pointer;flex-shrink:0}
@@ -470,9 +470,9 @@ function App(){
       h("div",{className:"sf",style:{position:"relative"}},
         h("label",null,"Rubro a buscar"),
         h("div",{className:"rubro-sel"+(rubroOpen?" open":""),onClick:()=>setRubroOpen(o=>!o)},
-          selRubros.includes("completo")?"Todos los rubros (recomendado)":
-          selRubros.length===1?RUBROS.find(r=>r.value===selRubros[0])?.label||selRubros[0]:
-          selRubros.length+" rubros seleccionados",
+          selRubros.includes("completo")?"Todos los rubros":
+          selRubros.length===1?(RUBROS.find(r=>r.value===selRubros[0])?.label||selRubros[0]):
+          selRubros.length+" seleccionados",
           h("span",null,rubroOpen?"▲":"▼")),
         rubroOpen&&h("div",{className:"rubro-backdrop",onClick:()=>setRubroOpen(false)}),
         rubroOpen&&h("div",{className:"rubro-dd"},
@@ -489,7 +489,7 @@ function App(){
                   setSelRubros(next.length===0?["completo"]:next);
                 }
               }},
-              h("input",{type:"checkbox",checked:isChecked,onChange:()=>{},onClick:e=>e.stopPropagation()}),
+              h("input",{type:"checkbox",checked:isChecked,onChange:()=>{},style:{pointerEvents:"none",flexShrink:0}}),
               r.label)
           }))),
       h("div",{className:"sf sm"},h("label",null,"Radio (km)"),h("input",{type:"number",min:5,max:100,value:radio,onChange:e=>setRadio(e.target.value)})),
