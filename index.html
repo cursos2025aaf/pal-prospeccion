@@ -243,7 +243,6 @@ function App(){
   const [cls,setCls]=useState([]);
   const [selZona,setSelZona]=useState(null);
   const [modal,setModal]=useState(null);
-  const [wspModal,setWspModal]=useState(null);
   const [wspText,setWspText]=useState("");
   const [err,setErr]=useState("");
   const [done,setDone]=useState(false);
@@ -255,7 +254,7 @@ function App(){
   const placeClass=useRef(null);
   const geocoder=useRef(null);
 
-  function openWsp(e){const s=makeScript(e);setWspText(s.saludo+"\n\n"+s.ctx);setWspModal(e);}
+  function abrirGuion(e){const s=makeScript(e);setWspText(s.saludo+"\n\n"+s.ctx+"\n\n"+s.cierre);setModal(e);}
 
   useEffect(()=>{
     if(!GOOGLE_API_KEY){setErr("Falta la clave de Google Places. Configurala en la meta tag del archivo.");return;}
@@ -308,7 +307,7 @@ function App(){
     const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
     return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
   }
-  const EXCLUIR_KW=["kiosco","kiosko","locutorio","fotocopias","fotocopiadora","librería","libreria","correo argentino","farmacia","supermercado","hipermercado","ferretería","ferreteria","verdulería","verduleria","panadería","panaderia","lavadero","tintorería","tintoreria","peluquería","peluqueria","estacionamiento","parking","taxi","remis","seguro","seguros","banco ","financiera","prestamos","odontología","odontologia","médico","medico","policía","policia","bomberos","iglesia","escuela","colegio","universidad","hotel","hostel","pizzería","pizzeria","restaurant","cervecería","cerveceria","bar ","café ","cafe ","parrilla","heladería","heladeria","natación","natacion","gimnasio","internet ","ciber","cyber","cartucho","tóner","toner","tonner","consumibles de impresora","recarga de cartucho","service de impresora","reparación de impresora","reparacion de impresora","celular","smartphone","tablet","electrodoméstico","electrodomestico","mueble","colchon","colchón","inmobiliaria","automotora","concesionaria","lubricentro","gomería","gomeria","distribuidora","importadora","mayorista"];
+  const EXCLUIR_KW=["kiosco","kiosko","locutorio","fotocopias","fotocopiadora","librería","libreria","correo argentino","farmacia","supermercado","hipermercado","ferretería","ferreteria","verdulería","verduleria","panadería","panaderia","lavadero","tintorería","tintoreria","peluquería","peluqueria","estacionamiento","parking","taxi","remis","seguro","seguros","banco ","financiera","prestamos","odontología","odontologia","médico","medico","policía","policia","bomberos","iglesia","escuela","colegio","universidad","hotel","hostel","pizzería","pizzeria","restaurant","cervecería","cerveceria","bar ","café ","cafe ","parrilla","heladería","heladeria","natación","natacion","gimnasio","internet ","ciber","cyber","cartucho","tóner","toner","tonner","consumibles de impresora","recarga de cartucho","service de impresora","reparación de impresora","reparacion de impresora","celular","smartphone","tablet","electrodoméstico","electrodomestico","mueble","colchon","colchón","inmobiliaria","automotora","concesionaria","lubricentro","gomería","gomeria","distribuidora","importadora","mayorista","despensa","cooperativa de agua","cooperativa agua","oficina de turismo","turismo municipal","municipalidad","delegación municipal","delegacion municipal"];
   function esIrrelevante(nombre,tipos){
     const n=(nombre||"").toLowerCase();
     if(EXCLUIR_KW.some(p=>n.includes(p)))return true;
@@ -439,8 +438,8 @@ function App(){
                     e.web&&h("div",{className:"f-dato"},"🌐 ",h("a",{href:e.web,target:"_blank"},e.web.replace(/^https?:\/\//,"").replace(/\/$/,"")))),
                   h("div",{className:"pip-fecha"},"Último contacto: ",e.fecha||"—")),
                 h("div",{className:"f-foot"},
-                  h("div",{className:"fbtn p",onClick:()=>setModal(e)},"📄 Guion de venta"),
-                  e.tel&&h("div",{className:"fbtn s",onClick:()=>openWsp(e)},"💬 WhatsApp")),
+                  h("div",{className:"fbtn p",onClick:()=>abrirGuion(e)},"📄 Guion de venta"),
+                  e.tel&&h("div",{className:"fbtn s",onClick:()=>abrirGuion(e)},"💬 WhatsApp")),
                 h("div",{className:"est-bar"},
                   [["visitada","ev","✓ Visitada"],["interesada","ei","★ Interesa"],["volver","er","↻ A volver"],["no","en","✗ No"]].map(([st,cls2,lbl])=>
                     h("button",{key:st,className:`est-btn ${e.estado===st?cls2:""}`,onClick:()=>setCrmEstado(e,st)},lbl)))))));
@@ -475,8 +474,8 @@ function App(){
                 e.web&&h("div",{className:"f-dato"},"🌐 ",h("a",{href:e.web,target:"_blank"},e.web.replace(/^https?:\/\//,"").replace(/\/$/,"")))),
               h("div",{className:"f-op"},h("b",null,"Oportunidad PAL"),(PRODS[e.perf]||PRODS.otro).prod)),
             h("div",{className:"f-foot"},
-              h("div",{className:"fbtn p",onClick:()=>setModal(e)},"📄 Guion de venta"),
-              e.tel&&h("div",{className:"fbtn s",onClick:()=>openWsp(e)},"💬 WhatsApp")),
+              h("div",{className:"fbtn p",onClick:()=>abrirGuion(e)},"📄 Guion de venta"),
+              e.tel&&h("div",{className:"fbtn s",onClick:()=>abrirGuion(e)},"💬 WhatsApp")),
             h("div",{className:"est-bar"},
               [["visitada","ev","✓ Visitada"],["interesada","ei","★ Interesa"],["volver","er","↻ A volver"],["no","en","✗ No"]].map(([st,cls2,lbl])=>
                 h("button",{key:st,className:`est-btn ${getCrm(e).estado===st?cls2:""}`,onClick:()=>setCrmEstado(e,st)},lbl)))))))),
@@ -490,31 +489,20 @@ function App(){
         h("div",{className:"mh"},h("h3",null,modal.nombre),h("button",{className:"mc-btn",onClick:()=>setModal(null)},"×")),
         h("div",{className:"mbody"},
           h("div",{className:"msec"},h("h4",null,"Producto sugerido"),h("p",null,(PRODS[modal.perf]||PRODS.otro).prod)),
-          h("div",{className:"msec"},h("h4",null,"Guion de apertura"),
-            h("div",{className:"sbox"},
-              h("p",{style:{marginBottom:"10px"}},makeScript(modal).saludo),
-              h("p",{style:{marginBottom:"10px"}},makeScript(modal).ctx),
-              h("p",null,makeScript(modal).cierre))),
+          h("div",{className:"msec"},
+            h("h4",null,"Guion de apertura"),
+            h("p",{style:{fontSize:"12px",color:"#888",marginBottom:"6px",marginTop:"-4px"}},"Podés editar el texto antes de enviarlo por WhatsApp."),
+            h("textarea",{style:{width:"100%",minHeight:"180px",padding:"12px",fontFamily:"'Inter',sans-serif",fontSize:"14px",lineHeight:"1.6",border:"1.5px solid #D6CEC4",borderRadius:"4px",resize:"vertical",boxSizing:"border-box"},value:wspText,onChange:ev=>setWspText(ev.target.value)})),
           h("div",{className:"msec"},h("h4",null,"Datos de contacto"),h("p",null,modal.dir),modal.tel&&h("p",null,"Tel: ",modal.tel),modal.web&&h("p",null,"Web: ",modal.web)),
           h("div",{className:"msec"},
             h("h4",null,"Mis notas"),
-            h("textarea",{className:"notas-area",placeholder:"Observaciones, próximo paso, nombre del contacto...",defaultValue:getCrm(modal).notas||"",onBlur:ev=>saveCrmNotas(modal,ev.target.value)}))))))
-,
-    wspModal&&h("div",{className:"mo",onClick:()=>setWspModal(null)},
-      h("div",{className:"mb",onClick:ev=>ev.stopPropagation()},
-        h("div",{className:"mh"},
-          h("h3",null,"💬 WhatsApp — ",wspModal.nombre),
-          h("button",{className:"mc-btn",onClick:()=>setWspModal(null)},"×")),
-        h("div",{className:"mbody"},
-          h("div",{className:"msec"},
-            h("h4",null,"Editá el mensaje antes de enviar"),
-            h("textarea",{style:{width:"100%",minHeight:"160px",padding:"12px",fontFamily:"'Inter',sans-serif",fontSize:"14px",lineHeight:"1.6",border:"1.5px solid #D6CEC4",borderRadius:"4px",resize:"vertical",boxSizing:"border-box"},value:wspText,onChange:ev=>setWspText(ev.target.value)})),
-          wspModal.tel&&h("a",{
-            href:`https://wa.me/${wspModal.tel.replace(/[^0-9]/g,"")}?text=${encodeURIComponent(wspText)}`,
+            h("textarea",{className:"notas-area",placeholder:"Observaciones, próximo paso, nombre del contacto...",defaultValue:getCrm(modal).notas||"",onBlur:ev=>saveCrmNotas(modal,ev.target.value)})),
+          modal.tel&&h("a",{
+            href:`https://wa.me/${modal.tel.replace(/[^0-9]/g,"")}?text=${encodeURIComponent(wspText)}`,
             target:"_blank",
             className:"fbtn p",
-            style:{display:"flex",marginTop:"16px",textDecoration:"none",justifyContent:"center"},
-            onClick:()=>setWspModal(null)
+            style:{display:"flex",marginTop:"8px",textDecoration:"none",justifyContent:"center"},
+            onClick:()=>setModal(null)
           },"💬 Enviar por WhatsApp"))))
   );
 }
