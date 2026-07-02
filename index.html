@@ -245,6 +245,27 @@ function perfil(n,t){
   if(nm.includes("cartel")||nm.includes("fotograf")||nm.includes("plotter")||nm.includes("gran formato")||nm.includes("diseño")||nm.includes("estudio")) return "plotters";
   return "otro";
 }
+const RUBRO_KEYS={
+  completo:["imprenta","impresion","impresiones","grafica","gráfica","serigraf","litograf","offset","flexo","packaging","envase","envases","polietilen","corrugado","carton","cartón","embalaje","plotter","ploter","carteleria","cartelería","fotograf","gran formato","arrocera","molino arrocero","avicola","avícola","frigorifico","frigorific","sachet","lácteo","lacteo","regaleria","papel regalo","editorial","imprenta","rotulo","rótulo","cartoneria","cartonería","serigrafia","impresora industrial","etiqueta","sticker","bolsa impresa","envase impreso","laminado","flexografia","ctp ","plancha ","fotopolimero"],
+  flexo:["flexo","flexograf","packaging","envase","envases","polietilen","laminado","bolsa impresa","etiqueta","sticker","sello","film ","serigrafia","imprenta flex"],
+  imprentas:["imprenta","impresion","impresiones","grafica","gráfica","serigraf","litograf","offset","tipograf","editorial"],
+  plotters:["plotter","ploter","carteleria","cartelería","fotograf","gran formato","banner","vinilo","rotulo","rótulo","letrero","señalética","señaletica","publicidad graf","diseño gráf","diseño graf","imag ","imagen corp"],
+  alimentos:["frigorifico","frigorific","procesadora de","planta de envase","conserva","molino ","cereal","snack","empacadora"],
+  arroceras:["arrocera","arrocer","arroz","molino arrocero","secadero de arroz","acopio de arroz"],
+  avicolas:["avicola","avícola","granja avicola","granja avícola","frigorifico avicola","pollo","incubadora avicola"],
+  carton:["carton","cartón","corrugado","embalaje corrugado","cartoneria","cartonería","caja de carton"],
+  bolsas_papel:["bolsa de papel","bolsas de papel","kraft","saquito de papel","bolsa papel"],
+  bolsas_plastico:["bolsa de polietilen","bolsas plasticas","polietilen","bolsa plastic","film plastico","polipropil"],
+  sachets:["sachet","lácteo","lacteo","planta lactea","lecheria","lechería","láctea","lactea"],
+  regaleria:["regaleria","regalería","papel regalo","papel de regalo","papel gift","papel fantasia","papel fantasía"],
+};
+function esPertinente(nombre,tipos,selRubros){
+  const p=perfil(nombre,tipos);
+  if(p!=="otro") return true;
+  const n=(nombre||"").toLowerCase();
+  const keys=selRubros.includes("completo")?RUBRO_KEYS.completo:[...new Set(selRubros.flatMap(r=>RUBRO_KEYS[r]||[]))];
+  return keys.some(k=>n.includes(k));
+}
 function makeScript(e){
   const p=PRODS[e.perf]||PRODS.otro;
   return {
@@ -360,7 +381,8 @@ function App(){
       }).filter(e=>
         typeof e.lat==="number"&&typeof e.lng==="number"&&
         dist(center2.lat,center2.lng,e.lat,e.lng)<=radioKm&&
-        !esIrrelevante(e.nombre,e.tipos)
+        !esIrrelevante(e.nombre,e.tipos)&&
+        esPertinente(e.nombre,e.tipos,selRubros)
       ).slice(0,30);
       const clustered=cluster(data,Number(radio));
       setEmps(data);setCls(clustered);setSelZona(clustered.length?0:null);setDone(true);
