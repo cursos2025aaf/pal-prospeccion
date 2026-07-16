@@ -141,7 +141,7 @@ main{flex:1;padding:32px 4%;background:#F0EBE3}
 .est-btn.ev{background:#D1FAE5;border-color:#059669;color:#065F46;font-weight:700}
 .est-btn.ei{background:#DBEAFE;border-color:#2563EB;color:#1E40AF;font-weight:700}
 .est-btn.er{background:#FEF3C7;border-color:#D97706;color:#92400E;font-weight:700}
-.est-btn.en{background:#F3F4F6;border-color:#9CA3AF;color:#6B7280;font-weight:700}
+.est-btn.en{background:#FEE2E2;border-color:#EF4444;color:#991B1B;font-weight:700}
 .notas-area{width:100%;min-height:80px;border:1.5px solid #D6CEC4;border-radius:3px;padding:10px;font-size:13px;font-family:'Inter',sans-serif;resize:vertical;outline:none;margin-top:6px;box-sizing:border-box}
 .notas-area:focus{border-color:#0EA5E9}
 .pip-empty{text-align:center;padding:48px 20px;color:#6B7280;font-size:16px}
@@ -435,7 +435,15 @@ function App(){
         bounds.extend(mk.getPosition());markers.current.push(mk);
       });
     });
-    if(!bounds.isEmpty()) mapInst.current.fitBounds(bounds);
+    // El recuadro del mapa está oculto (display:none) mientras no hay resultados,
+    // así que Google Maps arranca creyendo que su tamaño es cero y nunca se
+    // redibuja solo al hacerse visible. Forzamos un recálculo apenas React
+    // termina de mostrar el recuadro (de ahí el setTimeout).
+    setTimeout(()=>{
+      if(!mapInst.current) return;
+      google.maps.event.trigger(mapInst.current,"resize");
+      if(!bounds.isEmpty()) mapInst.current.fitBounds(bounds);
+    },150);
   }
 
   function selZonaFn(i){
