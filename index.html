@@ -186,6 +186,8 @@ const RUBROS = [
   { value:"avicolas", label:"Avícolas / Granjas de aves", queries:["avícola","granja avícola","frigorífico avícola","planta avícola","procesadora avícola"] },
   { value:"carton", label:"Cajas de cartón corrugado", queries:["fabrica de cajas de carton corrugado","carton corrugado","caja de carton","embalaje corrugado","cartonería industrial"] },
   { value:"sachets", label:"Sachets de leche / Packaging lácteo", queries:["sachet de leche","envase flexible lacteo","packaging lacteo","planta lactea sachet","fabrica de sachets"] },
+  { value:"bolsas_papel", label:"Bolsas de papel", queries:["fabrica de bolsas de papel","bolsas de papel kraft","packaging papel kraft","envases de papel"] },
+  { value:"bolsas_plastico", label:"Bolsas plásticas", queries:["fabrica de bolsas plasticas","bolsas de polietileno","packaging plastico flexible","film plastico impreso"] },
   { value:"molinos", label:"Molinos / Molinería", queries:["molino harinero","molino de harina","molino de trigo","molino de maiz","molino de maíz","molino de especias","industria molinera","molienda industrial","fabrica de harina"] },
   { value:"envasadoras", label:"Plantas envasadoras", queries:["planta envasadora","envasadora industrial","empresa envasadora","envasado industrial","planta de envasado","linea de envasado"] },
 ];
@@ -202,7 +204,6 @@ const PRODS = {
   bolsas_papel:{ prod:"Fotopolímeros Pal Flex para papel", pitch:"planchas flexo para impresión sobre bolsas de papel kraft — calidad superior en cada tirada, sin pérdida de detalle" },
   bolsas_plastico:{ prod:"Fotopolímeros Pal Flex para plástico", pitch:"planchas fotopolímero para flexografía sobre polietileno — definición de línea y sólidos sin smear" },
   sachets:{ prod:"Fotopolímeros para packaging lácteo", pitch:"planchas flexo aptas para contacto indirecto con alimentos — cumple normas SENASA para packaging de productos lácteos" },
-  regaleria:{ prod:"CTP + Fotopolímeros para regalería", pitch:"solución completa de preprensa para impresión de papeles de regalo — colores vibrantes y registro perfecto en alta velocidad" },
   otro:{ prod:"Catálogo completo PAL SRL", pitch:"más de 40 años de soluciones integrales para la industria gráfica" },
   molinos:{ prod:"Fotopolímeros para envases de molinería", pitch:"planchas flexo para bolsas de harina, maíz, trigo y cereales — alta durabilidad y colores sólidos en cada tirada" },
   envasadoras:{ prod:"Fotopolímeros Pal Flex para envasado industrial", pitch:"planchas flexo para líneas de envasado de alta velocidad — calidad consistente, menor tiempo de entrega" },
@@ -251,11 +252,13 @@ function perfil(n,t){
   if(nm.includes("alimen")||nm.includes("snack")) return "alimentos";
   if(nm.includes("molino")||nm.includes("molinera")||nm.includes("harinera")||nm.includes("harina")) return "molinos";
   if(nm.includes("envasadora")||nm.includes("envasado")||nm.includes("empacadora")) return "envasadoras";
+  if((nm.includes("bolsa")||nm.includes("bolsas"))&&(nm.includes("papel")||nm.includes("kraft"))) return "bolsas_papel";
+  if((nm.includes("bolsa")||nm.includes("bolsas"))&&(nm.includes("plastic")||nm.includes("polietilen")||nm.includes("polipropil"))) return "bolsas_plastico";
   if(nm.includes("cartel")||nm.includes("fotograf")||nm.includes("plotter")||nm.includes("gran formato")||nm.includes("diseño")||nm.includes("estudio")) return "plotters";
   return "otro";
 }
 const RUBRO_KEYS={
-  completo:["imprenta","impresion","impresiones","grafica","gráfica","serigraf","litograf","offset","flexo","packaging","envase","envases","polietilen","corrugado","carton","cartón","embalaje","plotter","ploter","carteleria","cartelería","fotograf","gran formato","arrocera","molino arrocero","avicola","avícola","frigorifico","frigorific","sachet","lácteo","lacteo","regaleria","papel regalo","editorial","imprenta","rotulo","rótulo","cartoneria","cartonería","serigrafia","impresora industrial","etiqueta","sticker","bolsa impresa","envase impreso","laminado","flexografia","ctp ","plancha ","fotopolimero"],
+  completo:["imprenta","impresion","impresiones","grafica","gráfica","serigraf","litograf","offset","flexo","packaging","envase","envases","polietilen","corrugado","carton","cartón","embalaje","plotter","ploter","carteleria","cartelería","fotograf","gran formato","arrocera","molino arrocero","avicola","avícola","frigorifico","frigorific","sachet","lácteo","lacteo","editorial","imprenta","rotulo","rótulo","cartoneria","cartonería","serigrafia","impresora industrial","etiqueta","sticker","bolsa impresa","envase impreso","laminado","flexografia","ctp ","plancha ","fotopolimero"],
   flexo:["flexo","flexograf","packaging","envase","envases","polietilen","laminado","bolsa impresa","etiqueta","sticker","sello","film ","serigrafia","imprenta flex"],
   imprentas:["imprenta","impresion","impresiones","grafica","gráfica","serigraf","litograf","offset","tipograf","editorial"],
   plotters:["plotter","ploter","carteleria","cartelería","fotograf","gran formato","banner","vinilo","rotulo","rótulo","letrero","señalética","señaletica","publicidad graf","diseño gráf","diseño graf","imag ","imagen corp"],
@@ -266,11 +269,10 @@ const RUBRO_KEYS={
   bolsas_papel:["bolsa de papel","bolsas de papel","kraft","saquito de papel","bolsa papel"],
   bolsas_plastico:["bolsa de polietilen","bolsas plasticas","polietilen","bolsa plastic","film plastico","polipropil"],
   sachets:["sachet","lácteo","lacteo","planta lactea","lecheria","lechería","láctea","lactea"],
-  regaleria:["regaleria","regalería","papel regalo","papel de regalo","papel gift","papel fantasia","papel fantasía"],
   molinos:["molino","molinera","molinero","molienda","harina","trigo","maíz","maiz","cereal","yerba mate"],
   envasadoras:["envasadora","envasado","planta envas","línea de envas","linea de envas","empacadora"],
 };
-const PMAP={flexo:"flexo",convertidor:"flexo",imprenta:"imprentas",alimentos:"alimentos",arroceras:"arroceras",avicolas:"avicolas",plotters:"plotters",molinos:"molinos",envasadoras:"envasadoras"};
+const PMAP={flexo:"flexo",convertidor:"flexo",imprenta:"imprentas",alimentos:"alimentos",arroceras:"arroceras",avicolas:"avicolas",plotters:"plotters",molinos:"molinos",envasadoras:"envasadoras",bolsas_papel:"bolsas_papel",bolsas_plastico:"bolsas_plastico"};
 function esPertinente(nombre,tipos,selRubros){
   if(selRubros.includes("completo")) return true;
   const p=perfil(nombre,tipos);
@@ -290,6 +292,9 @@ function makeScript(e){
   };
 }
 
+const PIPELINE_API = "https://pal-pipeline.iagentestech.workers.dev/api/pipeline";
+const USUARIOS_PAL = ["Alberto", "Serena", "Andrés"];
+
 function App(){
   const [zona,setZona]=useState("");
   const [selRubros,setSelRubros]=useState(["completo"]);const [rubroOpen,setRubroOpen]=useState(false);
@@ -303,14 +308,25 @@ function App(){
   const [err,setErr]=useState("");
   const [done,setDone]=useState(false);
   const [view,setView]=useState("buscar");
-  const [crm,setCrmState]=useState(()=>{try{return JSON.parse(localStorage.getItem("pal_crm")||"{}")}catch(e){return{}}});
+  const [crm,setCrmState]=useState({});
+  const [usuario,setUsuario]=useState(()=>localStorage.getItem("pal_usuario")||"");
   const mapRef=useRef(null);
   const mapInst=useRef(null);
   const markers=useRef([]);
   const placeClass=useRef(null);
   const geocoder=useRef(null);
 
+  useEffect(()=>{
+    fetch(PIPELINE_API).then(r=>r.json()).then(setCrmState).catch(()=>{});
+  },[]);
+
+  function elegirUsuario(nombre){
+    localStorage.setItem("pal_usuario",nombre);
+    setUsuario(nombre);
+  }
+
   function abrirGuion(e){const s=makeScript(e);setWspText(s.saludo+"\n\n"+s.ctx+"\n\n"+s.cierre);setModal(e);}
+
 
   useEffect(()=>{
     if(!GOOGLE_API_KEY){setErr("Falta la clave de Google Places. Configurala en la meta tag del archivo.");return;}
@@ -383,7 +399,9 @@ function App(){
       const queries=[...new Set(activeRubros.flatMap(r=>r.queries))];
       const radiusM=(Number(radio)||25)*1000;
       let all=[];
-      for(const q of queries){const r=await withTimeout(search(q+" en "+zona,loc,radiusM),15000,"La búsqueda tardó demasiado. Revisá la clave de API o intentá de nuevo.");all=all.concat(r);}
+      const resultados=await Promise.allSettled(queries.map(q=>withTimeout(search(q+" en "+zona,loc,radiusM),15000,"timeout")));
+      resultados.forEach(r=>{if(r.status==="fulfilled")all=all.concat(r.value);});
+      if(resultados.every(r=>r.status==="rejected")){throw new Error("No se pudo completar ninguna búsqueda. Revisá tu conexión o la clave de API.");}
       const seen=new Set(),uniq=all.filter(p=>{if(!p.id||seen.has(p.id))return false;seen.add(p.id);return true;});
       const center2=latLngOf(loc);
       const radioKm=Number(radio)||25;
@@ -438,20 +456,36 @@ function App(){
 
   function crmKey(e){return e.id||e.nombre+"|"+e.dir;}
   function getCrm(e){return crm[crmKey(e)]||{};}
+  function guardarProspecto(e,registro){
+    const k=crmKey(e);
+    fetch(PIPELINE_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:k,nombre:e.nombre,dir:e.dir,tel:e.tel,web:e.web,perf:e.perf,rating:e.rating,lat:e.lat,lng:e.lng,quien:usuario,...registro})}).catch(()=>{});
+  }
   function setCrmEstado(e,estado){
     const k=crmKey(e);const prev=crm[k]||{};const cur=prev.estado===estado?null:estado;
-    const next={...crm,[k]:{nombre:e.nombre,dir:e.dir,tel:e.tel,web:e.web,perf:e.perf,rating:e.rating,lat:e.lat,lng:e.lng,...prev,estado:cur,fecha:new Date().toLocaleDateString("es-AR")}};
-    localStorage.setItem("pal_crm",JSON.stringify(next));setCrmState(next);
+    const registro={estado:cur,fecha:new Date().toLocaleDateString("es-AR")};
+    const next={...crm,[k]:{...prev,...registro,quien:usuario}};
+    setCrmState(next);
+    guardarProspecto(e,{...prev,...registro});
   }
   function saveCrmNotas(e,notas){
-    const k=crmKey(e);
-    const next={...crm,[k]:{nombre:e.nombre,dir:e.dir,tel:e.tel,web:e.web,perf:e.perf,rating:e.rating,lat:e.lat,lng:e.lng,...(crm[k]||{}),notas}};
-    localStorage.setItem("pal_crm",JSON.stringify(next));setCrmState(next);
+    const k=crmKey(e);const prev=crm[k]||{};
+    const next={...crm,[k]:{...prev,notas,quien:usuario}};
+    setCrmState(next);
+    guardarProspecto(e,{...prev,notas});
   }
 
   const shown=selZona!==null&&cls[selZona]?cls[selZona]:emps;
+
   const PTAGS={flexo:"tag-f",convertidor:"tag-c",imprenta:"tag-i",alimentos:"tag-o",plotters:"tag-f",otro:"tag-o"};
-  const PLABS={flexo:"Flexografía",convertidor:"Convertidor",imprenta:"Imprenta",alimentos:"Alimenticia",arroceras:"Arrocera",avicolas:"Avícola",plotters:"Plotter/Cartelería",carton:"Cartón Corrugado",bolsas_papel:"Bolsas Papel",bolsas_plastico:"Bolsas Plásticas",sachets:"Sachets/Lácteos",regaleria:"Regalería",molinos:"Molinería",envasadoras:"Envasadora",otro:"Industrial"};
+  const PLABS={flexo:"Flexografía",convertidor:"Convertidor",imprenta:"Imprenta",alimentos:"Alimenticia",arroceras:"Arrocera",avicolas:"Avícola",plotters:"Plotter/Cartelería",carton:"Cartón Corrugado",bolsas_papel:"Bolsas Papel",bolsas_plastico:"Bolsas Plásticas",sachets:"Sachets/Lácteos",molinos:"Molinería",envasadoras:"Envasadora",otro:"Industrial"};
+
+  if(!usuario){
+    return h("div",{style:{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"#0A2540"}},
+      h("div",{style:{background:"#fff",borderRadius:"8px",padding:"36px 40px",textAlign:"center",maxWidth:"360px"}},
+        h("img",{src:PAL_LOGO,alt:"PAL SRL",style:{height:"60px",margin:"0 auto 20px",display:"block"}}),
+        h("div",{style:{fontFamily:"'Oswald',sans-serif",fontSize:"18px",color:"#0A2540",marginBottom:"18px",textTransform:"uppercase"}},"¿Quién sos?"),
+        USUARIOS_PAL.map(n=>h("button",{key:n,className:"btn-buscar",style:{width:"100%",marginBottom:"10px",background:"#0A2540"},onClick:()=>elegirUsuario(n)},n))));
+  }
 
   return h("div",{id:"root"},
     h("header",null,
@@ -465,10 +499,12 @@ function App(){
               h("circle",{cx:"12",cy:"10",r:"3"})))),
         h("div",{className:"h-sub"},"Fotopolímeros · CTP · Insumos Gráficos")),
       h("div",{className:"h-btns"},
+        h("button",{className:"h-btn",style:{borderColor:"rgba(255,255,255,0.3)"},onClick:()=>elegirUsuario("")},"👤 "+usuario),
         h("button",{className:"h-btn",disabled:emps.length===0||view!=="buscar",onClick:()=>document.querySelector(".zones-col")?.scrollIntoView({behavior:"smooth"})},"ZONAS"),
         h("button",{className:"h-btn",disabled:emps.length===0||view!=="buscar",onClick:()=>document.querySelector(".emp-sec")?.scrollIntoView({behavior:"smooth"})},"EMPRESAS"),
         h("button",{className:`h-btn${view==="pipeline"?" active":""}`,style:view==="pipeline"?{background:"#0EA5E9"}:{},onClick:()=>setView(v=>v==="pipeline"?"buscar":"pipeline")},
           "📋 PIPELINE"+(Object.values(crm).filter(e=>e.estado==="interesada"||e.estado==="volver").length>0?` (${Object.values(crm).filter(e=>e.estado==="interesada"||e.estado==="volver").length})`:"")))),
+
 
     h("div",{className:"searchbar"},
       h("div",{className:"sf"},h("label",null,"Provincia / Zona"),h("input",{type:"text",placeholder:"Ej: Entre Ríos, Provincia de Buenos Aires...",value:zona,onChange:e=>setZona(e.target.value),onKeyDown:e=>e.key==="Enter"&&buscar()})),
@@ -518,7 +554,7 @@ function App(){
                     h("div",{className:"f-dato"},"📍 ",e.dir),
                     e.tel&&h("div",{className:"f-dato"},"📞 ",h("a",{href:`tel:${e.tel}`},e.tel)),
                     e.web&&h("div",{className:"f-dato"},"🌐 ",h("a",{href:e.web,target:"_blank"},e.web.replace(/^https?:\/\//,"").replace(/\/$/,"")))),
-                  h("div",{className:"pip-fecha"},"Último contacto: ",e.fecha||"—")),
+                  h("div",{className:"pip-fecha"},"Último contacto: ",e.fecha||"—",e.quien?` · ${e.quien}`:"")),
                 h("div",{className:"f-foot"},
                   h("div",{className:"fbtn p",onClick:()=>abrirGuion(e)},"📄 Guion de venta"),
                   e.tel&&h("div",{className:"fbtn s",onClick:()=>abrirGuion(e)},"💬 WhatsApp")),
