@@ -346,7 +346,7 @@ function App(){
       const bounds=toBounds(center,radiusM);
       const{places:res}=await placeClass.current.searchByText({
         textQuery:q,
-        fields:["id","displayName","formattedAddress","nationalPhoneNumber","websiteURI","rating","userRatingCount","location","types"],
+        fields:["id","displayName","formattedAddress","internationalPhoneNumber","websiteURI","rating","userRatingCount","location","types"],
         locationBias:bounds,
         maxResultCount:20
       });
@@ -391,7 +391,7 @@ function App(){
         const nombre=typeof p.displayName==="string"?p.displayName:(p.displayName?.text||"");
         const ll=latLngOf(p.location);
         const perf=perfil(nombre,p.types);
-        return{id:p.id||"",nombre,dir:p.formattedAddress||"",tel:p.nationalPhoneNumber||"",web:p.websiteURI||"",rating:p.rating||null,rcount:p.userRatingCount||0,lat:ll?.lat,lng:ll?.lng,perf,tipos:p.types||[]};
+        return{id:p.id||"",nombre,dir:p.formattedAddress||"",tel:p.internationalPhoneNumber||"",web:p.websiteURI||"",rating:p.rating||null,rcount:p.userRatingCount||0,lat:ll?.lat,lng:ll?.lng,perf,tipos:p.types||[]};
       }).filter(e=>
         typeof e.lat==="number"&&typeof e.lng==="number"&&
         dist(center2.lat,center2.lng,e.lat,e.lng)<=radioKm&&
